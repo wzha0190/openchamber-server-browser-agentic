@@ -5,8 +5,14 @@ import { networkGrants, originGrants, parseConfig } from '../src/config.js';
 test('defaults to no private origin grants', () => {
   const config = parseConfig({});
 
-  assert.deepEqual(config, { chromePath: null, allowedOrigins: [], allowedNetworks: [], discoverDevServers: false });
+  assert.deepEqual(config, { chromePath: null, allowedOrigins: [], allowedNetworks: [], discoverDevServers: false, agentTakesControl: false });
   assert.deepEqual(originGrants(config.allowedOrigins), []);
+});
+
+test('keeps the agent waiting for a hand back unless it takes control', () => {
+  assert.equal(parseConfig({}).agentTakesControl, false);
+  assert.equal(parseConfig({ agentTakesControl: true }).agentTakesControl, true);
+  assert.throws(() => parseConfig({ agentTakesControl: 'always' }), /agentTakesControl must be true or false/);
 });
 
 test('normalizes explicit origins into exact host and port grants', () => {

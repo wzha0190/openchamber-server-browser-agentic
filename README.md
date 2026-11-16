@@ -83,6 +83,7 @@ Or add `"discoverDevServers": true` to allow any development server running on t
 - **The browser runs on the server.** So `localhost` means the server, not your laptop.
 - **Everyone with the panel sees the same browser.** It is not a privacy barrier between people sharing one OpenChamber.
 - **Sites see regular Chrome.** That is what lets Google sign-in work, and it also means sites cannot tell that an agent may be driving.
+- **Your clicks can stop waiting for the agent.** By default the page is yours until you press **Hand back to agent**. Set `"agentTakesControl": true` in `config.json` and agent actions run while you hold it, so your next click just acts on the page.
 
 ## More
 

@@ -43,6 +43,7 @@ export const createBrowserRuntime = ({
   allowedNetworks = [],
   configPath = null,
   devServers = null,
+  agentTakesControl = false,
 } = {}) => {
   const chrome = createChromeProcess({ chromePath });
   const proxy = createPolicyProxy({
@@ -672,7 +673,7 @@ export const createBrowserRuntime = ({
 
   runtime.perform = (action, parameters, callerSignal) => {
     if (closed) return Promise.reject(new Error('Browser runtime is closed'));
-    if (runtime.controller === 'user') {
+    if (runtime.controller === 'user' && !agentTakesControl) {
       return Promise.reject(new Error('The user controls the browser. Wait for them to hand control back.'));
     }
     const signal = callerSignal
@@ -680,7 +681,7 @@ export const createBrowserRuntime = ({
       : shutdownController.signal;
     const operation = actionQueue.catch(() => {}).then(async () => {
       signal.throwIfAborted();
-      if (runtime.controller === 'user') {
+      if (runtime.controller === 'user' && !agentTakesControl) {
         throw new Error('The user controls the browser. Wait for them to hand control back.');
       }
       await contextMenu.close();

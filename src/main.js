@@ -30,6 +30,7 @@ export const startService = async ({
   const devServers = config.discoverDevServers ? createDevServerScanner() : null;
   const browserRuntime = runtime ?? createBrowserManager({
     createRuntime: () => createBrowserRuntime({ ...config, devServers }),
+    agentTakesControl: config.agentTakesControl,
   });
   const service = createService({
     runtime: browserRuntime,

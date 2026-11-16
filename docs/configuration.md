@@ -66,6 +66,16 @@ A blocked plain-HTTP address opens a page that:
 
 HTTPS navigations to a blocked address end in Chrome's own `ERR_TUNNEL_CONNECTION_FAILED`.
 
+## Agent control
+
+By default a person who clicks the picture holds it, and an agent action waits with "The user controls the browser. Wait for them to hand control back." until they press **Hand back to agent**. Set `agentTakesControl` to let the agent act anyway:
+
+```json
+{ "agentTakesControl": true }
+```
+
+Every browser action then runs while the viewer keeps the page, and the next click simply acts on it. The panel's "You have control" line and its button belong to OpenChamber, so that line stays until the viewer hands back; the extension only stops waiting for it. Defaults to `false`.
+
 ## Chrome
 
 The service looks for Chrome or Chromium 109 or newer in standard locations. If it finds none, or picks the wrong one, set the path:

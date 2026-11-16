@@ -66,12 +66,16 @@ export const parseConfig = (value) => {
   if (value.discoverDevServers !== undefined && typeof value.discoverDevServers !== 'boolean') {
     throw new Error('config.discoverDevServers must be true or false');
   }
+  if (value.agentTakesControl !== undefined && typeof value.agentTakesControl !== 'boolean') {
+    throw new Error('config.agentTakesControl must be true or false');
+  }
   const allowedOrigins = (value.allowedOrigins ?? []).map(parseAllowedOrigin);
   return Object.freeze({
     chromePath: chromePath?.trim() ?? null,
     allowedOrigins: Object.freeze([...new Set(allowedOrigins)]),
     allowedNetworks: Object.freeze((value.allowedNetworks ?? []).map(parseAllowedNetwork)),
     discoverDevServers: value.discoverDevServers === true,
+    agentTakesControl: value.agentTakesControl === true,
   });
 };
 

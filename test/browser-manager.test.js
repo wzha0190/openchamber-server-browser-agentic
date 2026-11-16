@@ -140,6 +140,35 @@ test('serializes dock navigation and rejects it while any viewer owns control', 
   assert.equal(runtimes.get('ses_one').url, 'https://allowed.test');
 });
 
+test('runs agent actions while a viewer holds control once it takes control', async () => {
+  // Given a selected scope whose picture viewer A holds, with the option set.
+  const { factory, runtimes } = createRuntimeFactory();
+  const manager = createBrowserManager({ createRuntime: factory, agentTakesControl: true });
+  await manager.perform('browser.open', { url: 'https://one.test' }, undefined, context('/repo', 'ses_one'));
+  await manager.surfaceControl('user', 'viewer-a');
+
+  // When the agent acts, then it is not refused and the page still moves.
+  await manager.perform('browser.open', { url: 'https://next.test' }, undefined, context('/repo', 'ses_one'));
+  assert.equal(runtimes.get('ses_one').url, 'https://next.test');
+
+  // When A hands control back, then the dock works as it did before.
+  await manager.surfaceControl('none');
+  await manager.navigate('https://dock.test', manager.state().generation);
+  assert.equal(runtimes.get('ses_one').url, 'https://dock.test');
+});
+
+test('still refuses agent actions during user control without the option', async () => {
+  // Given the same scope with the option left off.
+  const { factory, runtimes } = createRuntimeFactory();
+  const manager = createBrowserManager({ createRuntime: factory });
+  await manager.perform('browser.open', { url: 'https://one.test' }, undefined, context('/repo', 'ses_one'));
+  await manager.surfaceControl('user', 'viewer-a');
+
+  // When the agent acts, then it waits for the person to hand control back.
+  await assert.rejects(manager.perform('browser.snapshot', {}, undefined, context('/repo', 'ses_one')), /hand control back/i);
+  assert.equal(runtimes.get('ses_one').url, 'https://one.test');
+});
+
 test('lets the viewer in control use the dock while other viewers only watch', async () => {
   // Given a selected scope that viewer A controls.
   const { factory, runtimes } = createRuntimeFactory();

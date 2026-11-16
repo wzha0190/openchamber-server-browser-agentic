@@ -21,6 +21,7 @@ export const createBrowserManager = ({
   createRuntime,
   maxScopes = DEFAULT_MAX_SCOPES,
   idleMs = DEFAULT_IDLE_MS,
+  agentTakesControl = false,
   now = Date.now,
   setTimer = setTimeout,
   clearTimer = clearTimeout,
@@ -232,7 +233,9 @@ export const createBrowserManager = ({
     perform(action, parameters, signal, context) {
       return enqueue(async () => {
         if (closed) throw new Error('Browser manager is closed');
-        if (controller === 'user') {
+        // With config.agentTakesControl, a viewer holding the picture never blocks
+        // the agent: the action runs and the picture keeps updating under them.
+        if (controller === 'user' && !agentTakesControl) {
           throw new Error('The user controls the browser. Wait for them to hand control back.');
         }
         const entry = await ensureScope(context);

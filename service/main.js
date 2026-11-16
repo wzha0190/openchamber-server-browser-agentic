@@ -4238,6 +4238,7 @@ var createBrowserManager = ({
   createRuntime,
   maxScopes = DEFAULT_MAX_SCOPES,
   idleMs = DEFAULT_IDLE_MS,
+  agentTakesControl = false,
   now = Date.now,
   setTimer = setTimeout,
   clearTimer = clearTimeout
@@ -4411,7 +4412,7 @@ var createBrowserManager = ({
     perform(action, parameters, signal, context) {
       return enqueue(async () => {
         if (closed) throw new Error("Browser manager is closed");
-        if (controller === "user") {
+        if (controller === "user" && !agentTakesControl) {
           throw new Error("The user controls the browser. Wait for them to hand control back.");
         }
         const entry = await ensureScope(context);
@@ -6923,12 +6924,16 @@ var parseConfig = (value) => {
   if (value.discoverDevServers !== void 0 && typeof value.discoverDevServers !== "boolean") {
     throw new Error("config.discoverDevServers must be true or false");
   }
+  if (value.agentTakesControl !== void 0 && typeof value.agentTakesControl !== "boolean") {
+    throw new Error("config.agentTakesControl must be true or false");
+  }
   const allowedOrigins = (value.allowedOrigins ?? []).map(parseAllowedOrigin);
   return Object.freeze({
     chromePath: chromePath?.trim() ?? null,
     allowedOrigins: Object.freeze([...new Set(allowedOrigins)]),
     allowedNetworks: Object.freeze((value.allowedNetworks ?? []).map(parseAllowedNetwork)),
-    discoverDevServers: value.discoverDevServers === true
+    discoverDevServers: value.discoverDevServers === true,
+    agentTakesControl: value.agentTakesControl === true
   });
 };
 var loadConfig = ({ entryUrl = import.meta.url, configPath } = {}) => {
@@ -7405,7 +7410,8 @@ var createBrowserRuntime = ({
   allowedOrigins = [],
   allowedNetworks = [],
   configPath = null,
-  devServers = null
+  devServers = null,
+  agentTakesControl = false
 } = {}) => {
   const chrome = createChromeProcess({ chromePath });
   const proxy = createPolicyProxy({
@@ -7955,14 +7961,14 @@ var createBrowserRuntime = ({
   };
   runtime.perform = (action, parameters, callerSignal) => {
     if (closed) return Promise.reject(new Error("Browser runtime is closed"));
-    if (runtime.controller === "user") {
+    if (runtime.controller === "user" && !agentTakesControl) {
       return Promise.reject(new Error("The user controls the browser. Wait for them to hand control back."));
     }
     const signal = callerSignal ? AbortSignal.any([callerSignal, shutdownController.signal]) : shutdownController.signal;
     const operation = actionQueue.catch(() => {
     }).then(async () => {
       signal.throwIfAborted();
-      if (runtime.controller === "user") {
+      if (runtime.controller === "user" && !agentTakesControl) {
         throw new Error("The user controls the browser. Wait for them to hand control back.");
       }
       await contextMenu.close();
@@ -8827,7 +8833,8 @@ var startService = async ({
   const config = loadConfig({ entryUrl: import.meta.url, configPath });
   const devServers = config.discoverDevServers ? createDevServerScanner() : null;
   const browserRuntime = runtime ?? createBrowserManager({
-    createRuntime: () => createBrowserRuntime({ ...config, devServers })
+    createRuntime: () => createBrowserRuntime({ ...config, devServers }),
+    agentTakesControl: config.agentTakesControl
   });
   const service = createService({
     runtime: browserRuntime,
