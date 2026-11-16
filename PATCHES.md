@@ -1,6 +1,6 @@
 # Local patches
 
-A private copy of [JosueGalRe/openchamber-server-browser](https://github.com/JosueGalRe/openchamber-server-browser), kept so local changes survive updates. Based on upstream `v0.10.0`.
+A private copy of [JosueGalRe/openchamber-server-browser](https://github.com/JosueGalRe/openchamber-server-browser), kept so local changes survive updates. Based on upstream `v0.10.0`. Private home: [wzha0190/openchamber-server-browser-agentic](https://github.com/wzha0190/openchamber-server-browser-agentic).
 
 ## agentTakesControl
 
