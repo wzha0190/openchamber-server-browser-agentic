@@ -110,7 +110,11 @@ const probeVersion = async (endpoint) => {
   }
 };
 
-export const createChromeProcess = ({ chromePath = null, startupTimeoutMs = 15_000 } = {}) => {
+export const createChromeProcess = ({
+  chromePath = null,
+  startupTimeoutMs = 15_000,
+  allowDirectWebRtcUdp = false,
+} = {}) => {
   let launchPromise = null;
   let child = null;
   let profileDir = null;
@@ -149,7 +153,9 @@ export const createChromeProcess = ({ chromePath = null, startupTimeoutMs = 15_0
       // Headless mode sets navigator.webdriver, which Google sign-in also refuses.
       '--disable-blink-features=AutomationControlled',
       ...userAgent,
-      '--webrtc-ip-handling-policy=disable_non_proxied_udp',
+      `--webrtc-ip-handling-policy=${allowDirectWebRtcUdp
+        ? 'default_public_interface_only'
+        : 'disable_non_proxied_udp'}`,
       '--remote-debugging-port=0',
       '--remote-debugging-address=127.0.0.1',
       `--user-data-dir=${profileDir}`,

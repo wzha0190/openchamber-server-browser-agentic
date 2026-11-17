@@ -44,8 +44,9 @@ export const createBrowserRuntime = ({
   configPath = null,
   devServers = null,
   agentTakesControl = false,
+  allowDirectWebRtcUdp = false,
 } = {}) => {
-  const chrome = createChromeProcess({ chromePath });
+  const chrome = createChromeProcess({ chromePath, allowDirectWebRtcUdp });
   const proxy = createPolicyProxy({
     grants: [...originGrants(allowedOrigins), ...networkGrants(allowedNetworks)],
     configPath,
