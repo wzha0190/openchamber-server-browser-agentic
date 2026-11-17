@@ -69,6 +69,15 @@ export const parseConfig = (value) => {
   if (value.agentTakesControl !== undefined && typeof value.agentTakesControl !== 'boolean') {
     throw new Error('config.agentTakesControl must be true or false');
   }
+  if (value.allowDirectWebRtcUdp !== undefined && typeof value.allowDirectWebRtcUdp !== 'boolean') {
+    throw new Error('config.allowDirectWebRtcUdp must be true or false');
+  }
+  if (value.idleMinutes !== undefined) {
+    const minutes = value.idleMinutes;
+    if (typeof minutes !== 'number' || !Number.isFinite(minutes) || minutes < 0) {
+      throw new Error('config.idleMinutes must be a finite number of minutes, 0 to never expire a scope');
+    }
+  }
   const allowedOrigins = (value.allowedOrigins ?? []).map(parseAllowedOrigin);
   return Object.freeze({
     chromePath: chromePath?.trim() ?? null,
@@ -76,6 +85,8 @@ export const parseConfig = (value) => {
     allowedNetworks: Object.freeze((value.allowedNetworks ?? []).map(parseAllowedNetwork)),
     discoverDevServers: value.discoverDevServers === true,
     agentTakesControl: value.agentTakesControl === true,
+    allowDirectWebRtcUdp: value.allowDirectWebRtcUdp === true,
+    idleMinutes: value.idleMinutes ?? 5,
   });
 };
 

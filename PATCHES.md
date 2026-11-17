@@ -14,6 +14,18 @@ By default a viewer who clicks the picture holds it, and every agent action is r
 
 Changed in `src/config.js`, `src/main.js`, `src/browser-manager.js`, `src/browser-runtime.js`, with tests in `test/config.test.js` and `test/browser-manager.test.js`, and notes in `README.md` and `docs/configuration.md`.
 
+## idleMinutes
+
+`config.json`:
+
+```json
+{ "idleMinutes": 0 }
+```
+
+Upstream closes a chat's browser scope after five idle minutes, removing its profile and sign-ins. `idleMinutes` sets that limit; `0` never expires a scope, so a sign-in survives as long as the service process lives. OpenChamber's own ten-minute stop of an unattended provider is separate: this copy also declares `service.keepRunning` in `package.json`, so the host keeps the service up and does not wipe profiles on that timer. The four-scope bound and its least-recently-used eviction are unchanged.
+
+Changed in `src/config.js`, `src/main.js`, with tests in `test/config.test.js`, notes in `README.md` and `docs/configuration.md` and `docs/how-it-works.md`, and the manifest change in `package.json`.
+
 ## Updating from upstream
 
 The installed copy is `/srv/openchamber/data/extensions/server-browser`. Its `origin` is upstream, which is what OpenChamber's updater follows; this repository is the remote `github`.

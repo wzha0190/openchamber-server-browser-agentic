@@ -76,6 +76,16 @@ By default a person who clicks the picture holds it, and an agent action waits w
 
 Every browser action then runs while the viewer keeps the page, and the next click simply acts on it. The panel's "You have control" line and its button belong to OpenChamber, so that line stays until the viewer hands back; the extension only stops waiting for it. Defaults to `false`.
 
+## Idle expiry
+
+A chat's browser closes when it has been unused for `idleMinutes`, and its profile and sign-ins go with it. Set it to change the default five minutes; `0` never expires a scope:
+
+```json
+{ "idleMinutes": 0 }
+```
+
+A viewer showing the browser, agent actions, dock commands and input all count as use. Eviction of the least-recently-used scope at the four-scope bound is unchanged. Defaults to `5`.
+
 ## Chrome
 
 The service looks for Chrome or Chromium 109 or newer in standard locations. If it finds none, or picks the wrong one, set the path:

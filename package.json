@@ -44,6 +44,7 @@
           "browser"
         ],
         "surface": true,
+        "keepRunning": true,
         "permissions": {
           "exec": [
             "chromium",

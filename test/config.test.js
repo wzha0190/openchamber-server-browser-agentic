@@ -5,14 +5,39 @@ import { networkGrants, originGrants, parseConfig } from '../src/config.js';
 test('defaults to no private origin grants', () => {
   const config = parseConfig({});
 
-  assert.deepEqual(config, { chromePath: null, allowedOrigins: [], allowedNetworks: [], discoverDevServers: false, agentTakesControl: false });
+  assert.deepEqual(config, {
+    chromePath: null,
+    allowedOrigins: [],
+    allowedNetworks: [],
+    discoverDevServers: false,
+    agentTakesControl: false,
+    allowDirectWebRtcUdp: false,
+    idleMinutes: 5,
+  });
   assert.deepEqual(originGrants(config.allowedOrigins), []);
+});
+
+test('direct WebRTC UDP is opt-in', () => {
+  assert.equal(parseConfig({}).allowDirectWebRtcUdp, false);
+  assert.equal(parseConfig({ allowDirectWebRtcUdp: true }).allowDirectWebRtcUdp, true);
+  assert.throws(
+    () => parseConfig({ allowDirectWebRtcUdp: 'yes' }),
+    /allowDirectWebRtcUdp must be true or false/,
+  );
 });
 
 test('keeps the agent waiting for a hand back unless it takes control', () => {
   assert.equal(parseConfig({}).agentTakesControl, false);
   assert.equal(parseConfig({ agentTakesControl: true }).agentTakesControl, true);
   assert.throws(() => parseConfig({ agentTakesControl: 'always' }), /agentTakesControl must be true or false/);
+});
+
+test('idleMinutes bounds scope expiry and 0 never expires', () => {
+  assert.equal(parseConfig({}).idleMinutes, 5);
+  assert.equal(parseConfig({ idleMinutes: 0 }).idleMinutes, 0);
+  assert.equal(parseConfig({ idleMinutes: 30 }).idleMinutes, 30);
+  assert.throws(() => parseConfig({ idleMinutes: 'forever' }), /idleMinutes must be a finite number/);
+  assert.throws(() => parseConfig({ idleMinutes: -1 }), /idleMinutes must be a finite number/);
 });
 
 test('normalizes explicit origins into exact host and port grants', () => {

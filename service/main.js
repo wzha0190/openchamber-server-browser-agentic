@@ -5765,7 +5765,11 @@ var probeVersion = async (endpoint) => {
     cdp.close();
   }
 };
-var createChromeProcess = ({ chromePath = null, startupTimeoutMs = 15e3 } = {}) => {
+var createChromeProcess = ({
+  chromePath = null,
+  startupTimeoutMs = 15e3,
+  allowDirectWebRtcUdp = false
+} = {}) => {
   let launchPromise = null;
   let child = null;
   let profileDir = null;
@@ -5806,7 +5810,7 @@ var createChromeProcess = ({ chromePath = null, startupTimeoutMs = 15e3 } = {}) 
       // Headless mode sets navigator.webdriver, which Google sign-in also refuses.
       "--disable-blink-features=AutomationControlled",
       ...userAgent,
-      "--webrtc-ip-handling-policy=disable_non_proxied_udp",
+      `--webrtc-ip-handling-policy=${allowDirectWebRtcUdp ? "default_public_interface_only" : "disable_non_proxied_udp"}`,
       "--remote-debugging-port=0",
       "--remote-debugging-address=127.0.0.1",
       `--user-data-dir=${profileDir}`,
@@ -6927,13 +6931,24 @@ var parseConfig = (value) => {
   if (value.agentTakesControl !== void 0 && typeof value.agentTakesControl !== "boolean") {
     throw new Error("config.agentTakesControl must be true or false");
   }
+  if (value.allowDirectWebRtcUdp !== void 0 && typeof value.allowDirectWebRtcUdp !== "boolean") {
+    throw new Error("config.allowDirectWebRtcUdp must be true or false");
+  }
+  if (value.idleMinutes !== void 0) {
+    const minutes = value.idleMinutes;
+    if (typeof minutes !== "number" || !Number.isFinite(minutes) || minutes < 0) {
+      throw new Error("config.idleMinutes must be a finite number of minutes, 0 to never expire a scope");
+    }
+  }
   const allowedOrigins = (value.allowedOrigins ?? []).map(parseAllowedOrigin);
   return Object.freeze({
     chromePath: chromePath?.trim() ?? null,
     allowedOrigins: Object.freeze([...new Set(allowedOrigins)]),
     allowedNetworks: Object.freeze((value.allowedNetworks ?? []).map(parseAllowedNetwork)),
     discoverDevServers: value.discoverDevServers === true,
-    agentTakesControl: value.agentTakesControl === true
+    agentTakesControl: value.agentTakesControl === true,
+    allowDirectWebRtcUdp: value.allowDirectWebRtcUdp === true,
+    idleMinutes: value.idleMinutes ?? 5
   });
 };
 var loadConfig = ({ entryUrl = import.meta.url, configPath } = {}) => {
@@ -7411,9 +7426,10 @@ var createBrowserRuntime = ({
   allowedNetworks = [],
   configPath = null,
   devServers = null,
-  agentTakesControl = false
+  agentTakesControl = false,
+  allowDirectWebRtcUdp = false
 } = {}) => {
-  const chrome = createChromeProcess({ chromePath });
+  const chrome = createChromeProcess({ chromePath, allowDirectWebRtcUdp });
   const proxy = createPolicyProxy({
     grants: [...originGrants(allowedOrigins), ...networkGrants(allowedNetworks)],
     configPath,
@@ -8834,7 +8850,9 @@ var startService = async ({
   const devServers = config.discoverDevServers ? createDevServerScanner() : null;
   const browserRuntime = runtime ?? createBrowserManager({
     createRuntime: () => createBrowserRuntime({ ...config, devServers }),
-    agentTakesControl: config.agentTakesControl
+    agentTakesControl: config.agentTakesControl,
+    // config.idleMinutes 0 means never expire a scope on idle.
+    idleMs: config.idleMinutes * 6e4
   });
   const service = createService({
     runtime: browserRuntime,

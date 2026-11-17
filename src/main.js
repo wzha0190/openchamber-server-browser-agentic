@@ -31,6 +31,8 @@ export const startService = async ({
   const browserRuntime = runtime ?? createBrowserManager({
     createRuntime: () => createBrowserRuntime({ ...config, devServers }),
     agentTakesControl: config.agentTakesControl,
+    // config.idleMinutes 0 means never expire a scope on idle.
+    idleMs: config.idleMinutes * 60_000,
   });
   const service = createService({
     runtime: browserRuntime,
