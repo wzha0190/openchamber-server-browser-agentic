@@ -1,11 +1,11 @@
 {
-  "name": "@josuegalre/openchamber-server-browser",
-  "version": "0.10.0",
+  "name": "@wzha0190/openchamber-server-browser-agentic",
+  "version": "0.10.1-agentic.1",
   "private": true,
-  "description": "Server-owned Chrome browser provider and shared surface for OpenChamber",
+  "description": "Agentic fork of Server Browser for OpenChamber",
   "type": "module",
   "license": "MIT",
-  "repository": "github:JosueGalRe/openchamber-server-browser",
+  "repository": "github:wzha0190/openchamber-server-browser-agentic",
   "engines": {
     "node": ">=22"
   },
@@ -17,7 +17,7 @@
     "contributes": {
       "panel": {
         "id": "server-browser",
-        "name": "Server Browser",
+        "name": "Server Browser Agentic (Fork)",
         "icon": "computer",
         "entry": "panel/index.html",
         "dock": "top",

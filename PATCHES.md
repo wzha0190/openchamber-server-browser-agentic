@@ -1,6 +1,6 @@
 # Local patches
 
-A private copy of [JosueGalRe/openchamber-server-browser](https://github.com/JosueGalRe/openchamber-server-browser), kept so local changes survive updates. Based on upstream `v0.10.0`. Private home: [wzha0190/openchamber-server-browser-agentic](https://github.com/wzha0190/openchamber-server-browser-agentic).
+An independent fork of [JosueGalRe/openchamber-server-browser](https://github.com/JosueGalRe/openchamber-server-browser), based on upstream `v0.10.0`. The fork uses its own version with an `-agentic.N` suffix, starting at `0.10.1-agentic.1`, so OpenChamber can distinguish it from the original and offer it as an update to earlier installations of the fork.
 
 ## agentTakesControl
 

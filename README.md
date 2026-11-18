@@ -1,10 +1,12 @@
-# Server Browser for OpenChamber
+# Server Browser Agentic for OpenChamber
+
+An independent fork of [Server Browser](https://github.com/JosueGalRe/openchamber-server-browser), based on upstream `v0.10.0`. OpenChamber shows this build as **Server Browser Agentic (Fork)**. See [PATCHES.md](PATCHES.md) for the fork-specific behavior and configuration.
 
 A real Chrome that runs on your OpenChamber server, shared by you and your agents. The agent browses with OpenChamber's `openchamber_web` tool. You watch the same page in a panel, step in when it needs a person (a sign-in, a captcha, a tricky form), and hand it back. Cookies, sign-ins, and form values carry over. You can also open Chrome DevTools on the page.
 
 ![The Server Browser panel showing a page and Chrome DevTools side by side](docs/images/panel-devtools.png)
 
-> **Experimental.** It works day to day but is still being checked across platforms. Each [release](https://github.com/JosueGalRe/openchamber-server-browser/releases) says what changed and what was tested.
+> **Experimental.** It works day to day but is still being checked across platforms. The [upstream releases](https://github.com/JosueGalRe/openchamber-server-browser/releases) document upstream changes and testing.
 
 ## What you can do
 
@@ -23,12 +25,12 @@ A real Chrome that runs on your OpenChamber server, shared by you and your agent
 
 ## Install
 
-1. In OpenChamber, open **Settings → Extensions** and install from `https://github.com/JosueGalRe/openchamber-server-browser`, or install the ZIP from a [release](https://github.com/JosueGalRe/openchamber-server-browser/releases).
+1. In OpenChamber, open **Settings → Extensions → Add Extension** and enter `https://github.com/wzha0190/openchamber-server-browser-agentic.git`. The fork uses the same extension ID as upstream, so install it in place of the original rather than alongside it. Back up `config.json` before replacing an existing installation.
 2. Approve its service. It is what starts Chrome on the server.
-3. Under **Settings → General → OpenChamber Tools → Browser provider**, select **Server Browser**.
-4. In a chat, ask the agent to open a page. Then open **Server Browser** from the panel rail.
+3. Under **Settings → General → OpenChamber Tools → Browser provider**, select **Server Browser Agentic (Fork)**.
+4. In a chat, ask the agent to open a page. Then open **Server Browser Agentic (Fork)** from the panel rail.
 
-To update, use **Update** in Settings → Extensions when a new version is offered, and back up your `config.json` first if you made one. The release notes say whether you need to approve the service again.
+To update a Git installation of this fork, use **Update** in Settings → Extensions when a new version is offered, and back up your `config.json` first if you made one.
 
 ## Using it
 

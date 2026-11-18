@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@josuegalre/openchamber-server-browser",
+      "name": "@wzha0190/openchamber-server-browser-agentic",
       "dependencies": {
         "@openchamber/sdk": "2.6.0",
         "ws": "8.18.3",
