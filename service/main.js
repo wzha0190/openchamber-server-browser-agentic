@@ -4396,7 +4396,7 @@ var createBrowserManager = ({
     await selectLatest();
   });
   const scheduleSweep = () => {
-    if (closed) return;
+    if (closed || idleMs === 0) return;
     sweepTimer = setTimer(() => {
       sweepTimer = null;
       void sweepIdleScopes().catch(() => {

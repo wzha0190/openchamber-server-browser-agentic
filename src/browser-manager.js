@@ -217,7 +217,8 @@ export const createBrowserManager = ({
     await selectLatest();
   });
   const scheduleSweep = () => {
-    if (closed) return;
+    // Zero disables idle expiry; it isn't an immediate expiry interval.
+    if (closed || idleMs === 0) return;
     sweepTimer = setTimer(() => {
       sweepTimer = null;
       void sweepIdleScopes().catch(() => {}).finally(scheduleSweep);

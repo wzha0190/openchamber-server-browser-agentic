@@ -1,6 +1,6 @@
 {
   "name": "@wzha0190/openchamber-server-browser-agentic",
-  "version": "0.10.1-agentic.1",
+  "version": "0.10.1-agentic.2",
   "private": true,
   "description": "Agentic fork of Server Browser for OpenChamber",
   "type": "module",

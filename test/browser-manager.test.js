@@ -646,6 +646,32 @@ test('expires idle scopes and makes room by evicting the least recently active i
   assert.deepEqual(runtimes.get('ses_two').calls.at(-1), ['close']);
 });
 
+test('keeps the same browser after hours idle when idleMs is zero', async () => {
+  let clock = 0;
+  const timers = [];
+  const { factory, runtimes } = createRuntimeFactory();
+  const manager = createBrowserManager({
+    createRuntime: factory,
+    idleMs: 0,
+    now: () => clock,
+    setTimer: (callback) => timers.push(callback),
+    clearTimer: () => {},
+  });
+  const chat = context('/repo', 'ses_one');
+  await manager.perform('browser.open', { url: 'https://one.test' }, undefined, chat);
+  const runtime = runtimes.get('ses_one');
+
+  clock = 2 * 60 * 60_000;
+  timers.shift()?.();
+  await manager.surfaceControl('none');
+  assert.deepEqual(manager.state().scopes.map((scope) => scope.sessionId), ['ses_one']);
+  assert.equal(runtime.calls.some(([kind]) => kind === 'close'), false);
+  assert.equal((await manager.perform('browser.snapshot', {}, undefined, chat)).url, 'https://one.test');
+  assert.equal(runtimes.get('ses_one'), runtime);
+  assert.equal(timers.length, 0, 'disabled expiry needs no sweep timer');
+  await manager.close();
+});
+
 test('opens the viewed chat\'s browser from the dock without waiting for an agent action', async () => {
   // Given one scope created by an agent action.
   const { factory, runtimes } = createRuntimeFactory();
